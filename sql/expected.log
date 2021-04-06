@@ -1,0 +1,542 @@
+DROP EXTENSION
+CREATE EXTENSION
+SET
+SET
+SET
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+ int 
+-----
+   1
+(1 row)
+
+ text  
+-------
+ hello
+(1 row)
+
+ text  
+-------
+ world
+(1 row)
+
+BEGIN
+ int 
+-----
+   1
+(1 row)
+
+ text  
+-------
+ hello
+(1 row)
+
+COMMIT
+COMMIT
+ ?column? 
+----------
+        5
+(1 row)
+
+ i 
+---
+ 1
+ 2
+(2 rows)
+
+ ?column? 
+----------
+ t
+(1 row)
+
+  f  
+-----
+ 1.0
+ 2.0
+(2 rows)
+
+PREPARE
+ ?column? | ?column? 
+----------+----------
+        1 | test
+(1 row)
+
+DEALLOCATE
+                                    query                                     | calls | rows 
+------------------------------------------------------------------------------+-------+------
+ PREPARE pgss_test (int) AS SELECT $1, $2 LIMIT $3                            |     1 |    1
+ SELECT $1                                                                   +|     4 |    4
+                                                                             +|       | 
+   AS "text"                                                                  |       | 
+ SELECT $1 + $2                                                               |     2 |    2
+ SELECT $1 + $2 + $3 AS "add"                                                 |     3 |    3
+ SELECT $1 AS "float"                                                         |     1 |    1
+ SELECT $1 AS "int"                                                           |     2 |    2
+ SELECT $1 AS i UNION SELECT $2 ORDER BY i                                    |     1 |    2
+ SELECT $1 || $2                                                              |     1 |    1
+ SELECT pg_stat_statements_reset()                                            |     1 |    1
+ SELECT query, calls, rows FROM pg_stat_statements ORDER BY query COLLATE "C" |     0 |    0
+ WITH t(f) AS (                                                              +|     1 |    2
+   VALUES ($1), ($2)                                                         +|       | 
+ )                                                                           +|       | 
+   SELECT f FROM t ORDER BY f                                                 |       | 
+ select $1::jsonb ? $2                                                        |     1 |    1
+(12 rows)
+
+                                    query                                     |           start            | rows 
+------------------------------------------------------------------------------+----------------------------+------
+ SELECT $1 AS "float"                                                         |                            |    0
+ SELECT $1 AS i UNION SELECT $2 ORDER BY i                                    |                            |    0
+ select $1::jsonb ? $2                                                        |                            |    0
+ SELECT $1 + $2 + $3 AS "add"                                                 |                            |    0
+ SELECT $1 || $2                                                              |                            |    0
+ SELECT $1 AS "int"                                                           |                            |    0
+ SELECT $1                                                                   +|                            |    0
+                                                                             +|                            | 
+   AS "text"                                                                  |                            | 
+ SELECT $1 + $2                                                               |                            |    0
+ WITH t(f) AS (                                                              +|                            |    0
+   VALUES ($1), ($2)                                                         +|                            | 
+ )                                                                           +|                            | 
+   SELECT f FROM t ORDER BY f                                                 |                            | 
+ PREPARE pgss_test (int) AS SELECT $1, $2 LIMIT $3                            |                            |    0
+ SELECT query, start, rows FROM pg_stat_sql ORDER BY start DESC               | 2021-03-28 05:23:34.38226  |    0
+ SELECT query, calls, rows FROM pg_stat_statements ORDER BY query COLLATE "C" | 2021-03-28 05:23:34.382113 |   12
+ PREPARE pgss_test (int) AS SELECT $1, $2 LIMIT $3                            | 2021-03-28 05:23:34.379888 |    1
+ WITH t(f) AS (                                                              +| 2021-03-28 05:23:34.378978 |    2
+   VALUES ($1), ($2)                                                         +|                            | 
+ )                                                                           +|                            | 
+   SELECT f FROM t ORDER BY f                                                 |                            | 
+ select $1::jsonb ? $2                                                        | 2021-03-28 05:23:34.377711 |    1
+ SELECT $1 AS i UNION SELECT $2 ORDER BY i                                    | 2021-03-28 05:23:34.376849 |    2
+ SELECT $1 + $2 + $3 AS "add"                                                 | 2021-03-28 05:23:34.374541 |    1
+ SELECT $1 + $2 + $3 AS "add"                                                 | 2021-03-28 05:23:34.374528 |    1
+ SELECT $1 + $2 + $3 AS "add"                                                 | 2021-03-28 05:23:34.374411 |    1
+ SELECT $1 + $2                                                               | 2021-03-28 05:23:34.37363  |    1
+ SELECT $1 || $2                                                              | 2021-03-28 05:23:34.373614 |    1
+ SELECT $1 + $2                                                               | 2021-03-28 05:23:34.372776 |    1
+ SELECT $1                                                                   +| 2021-03-28 05:23:34.371089 |    1
+                                                                             +|                            | 
+   AS "text"                                                                  |                            | 
+ SELECT $1 AS "float"                                                         | 2021-03-28 05:23:34.371075 |    1
+ SELECT $1                                                                   +| 2021-03-28 05:23:34.370221 |    1
+                                                                             +|                            | 
+   AS "text"                                                                  |                            | 
+ SELECT $1 AS "int"                                                           | 2021-03-28 05:23:34.370122 |    1
+ SELECT $1                                                                   +| 2021-03-28 05:23:34.369926 |    1
+                                                                             +|                            | 
+   AS "text"                                                                  |                            | 
+ SELECT $1                                                                   +| 2021-03-28 05:23:34.369804 |    1
+                                                                             +|                            | 
+   AS "text"                                                                  |                            | 
+ SELECT $1 AS "int"                                                           | 2021-03-28 05:23:34.369039 |    1
+                                                                              | 2021-03-28 05:23:34.367674 |    1
+                                                                              | 2021-03-28 05:23:34.365783 |    0
+                                                                              | 2021-03-28 05:23:34.278696 |    0
+                                                                              | 2021-03-28 05:23:34.191956 |    0
+(33 rows)
+
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+CREATE TABLE
+INSERT 0 10
+UPDATE 3
+DELETE 1
+BEGIN
+UPDATE 1
+COMMIT
+COMMIT
+UPDATE 1
+COMMIT
+INSERT 0 3
+ a |          b           
+---+----------------------
+ 6 | 666                 
+ 7 | aaa                 
+ 8 | bbb                 
+ 9 | bbb                 
+(4 rows)
+
+ a | b 
+---+---
+(0 rows)
+
+ a |          b           
+---+----------------------
+ 1 | a                   
+ 1 | 111                 
+ 2 | b                   
+ 2 | 222                 
+ 3 | c                   
+ 3 | 333                 
+ 4 | 444                 
+ 5 | 555                 
+ 6 | 666                 
+ 7 | aaa                 
+ 8 | bbb                 
+ 9 | bbb                 
+(12 rows)
+
+ a |          b           
+---+----------------------
+ 1 | 111                 
+ 2 | 222                 
+ 3 | 333                 
+ 4 | 444                 
+ 5 | 555                 
+ 1 | a                   
+ 2 | b                   
+ 3 | c                   
+(8 rows)
+
+                                    query                                     | calls | rows 
+------------------------------------------------------------------------------+-------+------
+ DELETE FROM test WHERE a > $1                                                |     1 |    1
+ INSERT INTO test (a, b) VALUES ($1, $2), ($3, $4), ($5, $6)                  |     1 |    3
+ INSERT INTO test VALUES(generate_series($1, $2), $3)                         |     1 |   10
+ SELECT * FROM test ORDER BY a                                                |     1 |   12
+ SELECT * FROM test WHERE a > $1 ORDER BY a                                   |     2 |    4
+ SELECT * FROM test WHERE a IN ($1, $2, $3, $4, $5)                           |     1 |    8
+ SELECT pg_stat_statements_reset()                                            |     1 |    1
+ SELECT query, calls, rows FROM pg_stat_statements ORDER BY query COLLATE "C" |     0 |    0
+ UPDATE test SET b = $1 WHERE a = $2                                          |     6 |    6
+ UPDATE test SET b = $1 WHERE a > $2                                          |     1 |    3
+(10 rows)
+
+                            query                            |           start            | rows 
+-------------------------------------------------------------+----------------------------+------
+                                                             |                            |    0
+                                                             |                            |    0
+                                                             |                            |    0
+ UPDATE test SET b = $1 WHERE a = $2                         |                            |    0
+                                                             |                            |    0
+ INSERT INTO test (a, b) VALUES ($1, $2), ($3, $4), ($5, $6) |                            |    0
+                                                             |                            |    0
+                                                             |                            |    0
+ INSERT INTO test VALUES(generate_series($1, $2), $3)        |                            |    0
+ UPDATE test SET b = $1 WHERE a > $2                         |                            |    0
+                                                             |                            |    0
+ DELETE FROM test WHERE a > $1                               |                            |    0
+                                                             |                            |    0
+                                                             |                            |    0
+ SELECT * FROM test WHERE a > $1 ORDER BY a                  |                            |    0
+                                                             |                            |    0
+ SELECT * FROM test WHERE a IN ($1, $2, $3, $4, $5)          |                            |    0
+                                                             | 2021-03-28 05:23:34.449468 |    0
+                                                             | 2021-03-28 05:23:34.449344 |   10
+ SELECT * FROM test WHERE a IN ($1, $2, $3, $4, $5)          | 2021-03-28 05:23:34.448287 |    8
+ SELECT * FROM test ORDER BY a                               | 2021-03-28 05:23:34.447479 |   12
+ SELECT * FROM test WHERE a > $1 ORDER BY a                  | 2021-03-28 05:23:34.446745 |    0
+ SELECT * FROM test WHERE a > $1 ORDER BY a                  | 2021-03-28 05:23:34.446571 |    4
+ INSERT INTO test (a, b) VALUES ($1, $2), ($3, $4), ($5, $6) | 2021-03-28 05:23:34.445777 |    3
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444999 |    1
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444955 |    1
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444793 |    1
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444746 |    1
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444575 |    1
+ UPDATE test SET b = $1 WHERE a = $2                         | 2021-03-28 05:23:34.444333 |    1
+ DELETE FROM test WHERE a > $1                               | 2021-03-28 05:23:34.443425 |    1
+ UPDATE test SET b = $1 WHERE a > $2                         | 2021-03-28 05:23:34.442657 |    3
+ INSERT INTO test VALUES(generate_series($1, $2), $3)        | 2021-03-28 05:23:34.440758 |   10
+                                                             | 2021-03-28 05:23:34.38415  |    1
+                                                             | 2021-03-28 05:23:34.379888 |    1
+                                                             | 2021-03-28 05:23:34.378978 |    2
+                                                             | 2021-03-28 05:23:34.377711 |    1
+                                                             | 2021-03-28 05:23:34.376849 |    2
+                                                             | 2021-03-28 05:23:34.374541 |    1
+                                                             | 2021-03-28 05:23:34.374528 |    1
+                                                             | 2021-03-28 05:23:34.374411 |    1
+                                                             | 2021-03-28 05:23:34.37363  |    1
+                                                             | 2021-03-28 05:23:34.373614 |    1
+                                                             | 2021-03-28 05:23:34.372776 |    1
+                                                             | 2021-03-28 05:23:34.371089 |    1
+                                                             | 2021-03-28 05:23:34.371075 |    1
+                                                             | 2021-03-28 05:23:34.370221 |    1
+                                                             | 2021-03-28 05:23:34.370122 |    1
+                                                             | 2021-03-28 05:23:34.369926 |    1
+                                                             | 2021-03-28 05:23:34.369804 |    1
+                                                             | 2021-03-28 05:23:34.369039 |    1
+                                                             | 2021-03-28 05:23:34.365783 |    0
+                                                             | 2021-03-28 05:23:34.278696 |    0
+                                                             | 2021-03-28 05:23:34.191956 |    0
+(54 rows)
+
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+ pg_stat_sql_reset 
+-------------------
+ 
+(1 row)
+
+CREATE TABLE
+INSERT 0 10
+UPDATE 3
+DELETE 1
+SET
+DROP TABLE
+SET
+                           query                           | calls | rows | wal_bytes_generated | wal_records_generated | wal_records_as_rows 
+-----------------------------------------------------------+-------+------+---------------------+-----------------------+---------------------
+ DELETE FROM pgss_test WHERE a > $1                        |     1 |    1 | t                   | t                     | t
+ DROP TABLE pgss_test                                      |     1 |    0 | t                   | t                     | f
+ INSERT INTO pgss_test VALUES(generate_series($1, $2), $3) |     1 |   10 | t                   | t                     | t
+ SELECT pg_stat_sql_reset()                                |     1 |    1 | f                   | f                     | f
+ SELECT pg_stat_statements_reset()                         |     1 |    1 | f                   | f                     | f
+ SELECT query, calls, rows,                               +|     0 |    0 | f                   | f                     | t
+ wal_bytes > $1 as wal_bytes_generated,                   +|       |      |                     |                       | 
+ wal_records > $2 as wal_records_generated,               +|       |      |                     |                       | 
+ wal_records = rows as wal_records_as_rows                +|       |      |                     |                       | 
+ FROM pg_stat_statements ORDER BY query COLLATE "C"        |       |      |                     |                       | 
+ SET pg_stat_statements.track_utility = FALSE              |     1 |    0 | f                   | f                     | t
+ UPDATE pgss_test SET b = $1 WHERE a > $2                  |     1 |    3 | t                   | t                     | t
+(8 rows)
+
+                           query                           |           start            | rows | wal_bytes_generated | wal_records_generated | wal_records_as_rows 
+-----------------------------------------------------------+----------------------------+------+---------------------+-----------------------+---------------------
+ SELECT query, start, rows,                               +|                            |    0 | f                   | f                     | t
+ wal_bytes > $1 as wal_bytes_generated,                   +|                            |      |                     |                       | 
+ wal_records > $2 as wal_records_generated,               +|                            |      |                     |                       | 
+ wal_records = rows as wal_records_as_rows                +|                            |      |                     |                       | 
+ FROM pg_stat_sql ORDER BY start DESC                      |                            |      |                     |                       | 
+ SELECT query, calls, rows,                               +|                            |    0 | f                   | f                     | t
+ wal_bytes > $1 as wal_bytes_generated,                   +|                            |      |                     |                       | 
+ wal_records > $2 as wal_records_generated,               +|                            |      |                     |                       | 
+ wal_records = rows as wal_records_as_rows                +|                            |      |                     |                       | 
+ FROM pg_stat_statements ORDER BY query COLLATE "C"        |                            |      |                     |                       | 
+                                                           |                            |    0 | f                   | f                     | t
+                                                           |                            |    0 | f                   | f                     | t
+ UPDATE pgss_test SET b = $1 WHERE a > $2                  |                            |    0 | f                   | f                     | t
+                                                           |                            |    0 | f                   | f                     | t
+                                                           |                            |    0 | f                   | f                     | t
+ INSERT INTO pgss_test VALUES(generate_series($1, $2), $3) |                            |    0 | f                   | f                     | t
+                                                           |                            |    0 | f                   | f                     | t
+ DELETE FROM pgss_test WHERE a > $1                        |                            |    0 | f                   | f                     | t
+ SELECT query, start, rows,                               +| 2021-03-28 05:23:34.613125 |    0 | f                   | f                     | t
+ wal_bytes > $1 as wal_bytes_generated,                   +|                            |      |                     |                       | 
+ wal_records > $2 as wal_records_generated,               +|                            |      |                     |                       | 
+ wal_records = rows as wal_records_as_rows                +|                            |      |                     |                       | 
+ FROM pg_stat_sql ORDER BY start DESC                      |                            |      |                     |                       | 
+ SELECT query, calls, rows,                               +| 2021-03-28 05:23:34.612911 |    8 | f                   | f                     | f
+ wal_bytes > $1 as wal_bytes_generated,                   +|                            |      |                     |                       | 
+ wal_records > $2 as wal_records_generated,               +|                            |      |                     |                       | 
+ wal_records = rows as wal_records_as_rows                +|                            |      |                     |                       | 
+ FROM pg_stat_statements ORDER BY query COLLATE "C"        |                            |      |                     |                       | 
+ SET pg_stat_statements.track_utility = FALSE              | 2021-03-28 05:23:34.610702 |    0 | f                   | f                     | t
+ DROP TABLE pgss_test                                      | 2021-03-28 05:23:34.580815 |    0 | t                   | t                     | f
+ DELETE FROM pgss_test WHERE a > $1                        | 2021-03-28 05:23:34.541717 |    1 | t                   | t                     | t
+ UPDATE pgss_test SET b = $1 WHERE a > $2                  | 2021-03-28 05:23:34.515802 |    3 | t                   | t                     | t
+ INSERT INTO pgss_test VALUES(generate_series($1, $2), $3) | 2021-03-28 05:23:34.483563 |   10 | t                   | t                     | t
+ SELECT pg_stat_sql_reset()                                | 2021-03-28 05:23:34.452342 |    1 | f                   | f                     | f
+(18 rows)
+
+SET
+ pg_stat_sql_reset 
+-------------------
+ 
+(1 row)
+
+ one 
+-----
+   1
+(1 row)
+
+ two 
+-----
+   2
+(1 row)
+
+SET
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+ one 
+-----
+   1
+(1 row)
+
+ two 
+-----
+   2
+(1 row)
+
+ query | calls | rows 
+-------+-------+------
+(0 rows)
+
+SET
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+DO
+CREATE FUNCTION
+ plus_two 
+----------
+        5
+(1 row)
+
+ plus_two 
+----------
+        9
+(1 row)
+
+CREATE FUNCTION
+ plus_one 
+----------
+        9
+(1 row)
+
+ plus_one 
+----------
+       11
+(1 row)
+
+                                    query                                     | calls | rows 
+------------------------------------------------------------------------------+-------+------
+ SELECT $1::TEXT                                                              |     1 |    1
+ SELECT PLUS_ONE($1)                                                          |     2 |    2
+ SELECT PLUS_TWO($1)                                                          |     2 |    2
+ SELECT pg_stat_statements_reset()                                            |     1 |    1
+ SELECT query, calls, rows FROM pg_stat_statements ORDER BY query COLLATE "C" |     0 |    0
+(5 rows)
+
+SET
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+DROP FUNCTION
+DROP FUNCTION
+CREATE FUNCTION
+ plus_two 
+----------
+        1
+(1 row)
+
+ plus_two 
+----------
+        4
+(1 row)
+
+CREATE FUNCTION
+ plus_one 
+----------
+        4
+(1 row)
+
+ plus_one 
+----------
+        2
+(1 row)
+
+                                    query                                     | calls | rows 
+------------------------------------------------------------------------------+-------+------
+ SELECT (i + $2 + $3)::INTEGER                                                |     2 |    2
+ SELECT (i + $2)::INTEGER LIMIT $3                                            |     2 |    2
+ SELECT PLUS_ONE($1)                                                          |     2 |    2
+ SELECT PLUS_TWO($1)                                                          |     2 |    2
+ SELECT pg_stat_statements_reset()                                            |     1 |    1
+ SELECT query, calls, rows FROM pg_stat_statements ORDER BY query COLLATE "C" |     0 |    0
+(6 rows)
+
+CREATE TABLE
+CREATE TABLE
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ id | id | a_id 
+----+----+------
+(0 rows)
+
+ calls |                                          query                                           
+-------+------------------------------------------------------------------------------------------
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR KEY SHARE
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR NO KEY UPDATE
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR SHARE
+     2 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE NOWAIT
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE OF pgss_a
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE OF pgss_b
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE OF pgss_b, pgss_a
+     1 | SELECT * FROM pgss_a JOIN pgss_b ON pgss_b.a_id = pgss_a.id FOR UPDATE SKIP LOCKED
+     0 | SELECT calls, query FROM pg_stat_statements ORDER BY query COLLATE "C"
+     1 | SELECT pg_stat_statements_reset()
+(12 rows)
+
+DROP TABLE
+SET
+ pg_stat_statements_reset 
+--------------------------
+ 
+(1 row)
+
+ pg_stat_sql_reset 
+-------------------
+ 
+(1 row)
+
+ ?column? 
+----------
+        1
+(1 row)
+
+CREATE INDEX
+DROP FUNCTION
+DROP FUNCTION
+DROP FUNCTION
